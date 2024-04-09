@@ -16,7 +16,6 @@ public class SAT
             var solutionSet = solution.ToHashSet();
             addVarsToSolution(solutionSet);
             return (true, solutionSet);
-
         }
         
         foreach (var clause in CNF.Clauses)
@@ -42,7 +41,7 @@ public class SAT
             return (posRes, posSolutionSet);
         }
         
-        var negClause = new Clause(literal);
+        var negClause = new Clause(-literal);
         var negCNF = new Formula(CNF);
         negCNF.Clauses.Add(negClause);
         
