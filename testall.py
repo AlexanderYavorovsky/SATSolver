@@ -17,6 +17,6 @@ for file in os.listdir(test_dir):
             )
         print(status.stdout.strip('\n'))
         if (status.returncode != 0):
-            returncode = 1 
+            returncode = 1
 
 sys.exit(returncode)
