@@ -28,5 +28,5 @@ Output: SAT/UNSAT + model (if SAT).
 
 Consider the following usage example:
 ```
-dotnet build dimacs1.txt
+dotnet run dimacs1.txt
 ```
