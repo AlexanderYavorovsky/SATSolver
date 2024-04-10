@@ -8,8 +8,8 @@ class Program()
 
         SAT sat = new SAT();
         
-        (bool status, var solution) = sat.Solve(path);
-        if (!status)
+        var solution = sat.Solve(path);
+        if (solution == null)
         {
             Console.WriteLine("s UNSATISFIABLE");
             return;

@@ -6,10 +6,10 @@ public class SAT
     public int VarCount { get; private set; }
     public int ClauseCount { get; private set; }
 
-    public (bool, IEnumerable<int>) Solve(string path)
+    public IEnumerable<int>? Solve(string path)
     {
         Parse(path);
-        return DPLL(this.CNF, new List<int>(), true);
+        return DPLL(CNF, new List<int>());
     }
     
     private void Parse(string path)
@@ -55,11 +55,8 @@ public class SAT
         return copyCNF;
     }
 
-    public (bool, IEnumerable<int>) DPLL(List<List<int>> CNF, List<int> solution, bool isPosBranch)
+    private IEnumerable<int>? DPLL(List<List<int>> CNF, List<int> solution)
     {
-        // Console.WriteLine("======");
-        // Console.WriteLine(isPosBranch ? "PosBranch:" : "NegBranch:");
-
         var cnfcopy = this.copyCNF(CNF);
         var solutioncopy = new List<int>(solution);
         
@@ -71,12 +68,12 @@ public class SAT
         {
             var solutionSet = solutioncopy.ToHashSet();
             addVarsToSolution(VarCount, solutionSet);
-            return (true, solutionSet.OrderBy(x => Math.Abs(x)));
+            return solutionSet.OrderBy(x => Math.Abs(x));
         }
 
         foreach (var clause in cnfcopy)
             if (clause.Count == 0)
-                return (false, solutioncopy);
+                return null;
 
         //choose lit
         var literal = cnfcopy[0][0];
@@ -86,38 +83,26 @@ public class SAT
         // dpll(cnf & ~literal)
 
         var posClause = new List<int> { literal };
-        // var posCNF = new List<List<int>>();
-        // foreach (var clause in cnfcopy)
-        // {
-        //     List<int> copy = new List<int>(clause);
-        //     posCNF.Add(copy);
-        // }
         var posCNF = copyCNF(cnfcopy);
         posCNF.Add(posClause);
         
-        (bool posRes, var posSolution) = DPLL(posCNF, solutioncopy, true);
+        var posSolution = DPLL(posCNF, solutioncopy);
 
-        if (posRes)
+        if (posSolution != null)
         {
             var posSolutionSet = posSolution.ToHashSet();
             addVarsToSolution(VarCount, posSolutionSet);
-            return (posRes, posSolutionSet.OrderBy(x => Math.Abs(x)));
+            return  posSolutionSet.OrderBy(x => Math.Abs(x));
         }
 
         var negClause = new List<int> { -literal };
-        // var negCNF = new List<List<int>>();
-        // foreach (var clause in cnfcopy)
-        // {
-        //     List<int> copy = new List<int>(clause);
-        //     negCNF.Add(copy);
-        // }
         var negCNF = copyCNF(cnfcopy);
         negCNF.Add(negClause);
         
-        return DPLL(negCNF, solutioncopy, false);
+        return DPLL(negCNF, solutioncopy);
     }
 
-    public void PureLiterals(List<List<int>> CNF, List<int> solution)
+    private void PureLiterals(List<List<int>> CNF, List<int> solution)
     {
         var literals = new HashSet<int>();
         var pure = new List<int>();
@@ -142,7 +127,7 @@ public class SAT
         solution.AddRange(pure);
     }
 
-    public void UnitPropagation(List<List<int>> CNF, List<int> solution)
+    private void UnitPropagation(List<List<int>> CNF, List<int> solution)
     {
         var units = new List<int>();
         
@@ -150,15 +135,6 @@ public class SAT
             if (clause.Count == 1)
                 units.Add(clause[0]);
 
-        // foreach (var x in units)
-        // {
-        //     foreach (var clause in CNF.Clauses.ToList())
-        //     {
-        //         if (clause.Units.Contains(x))
-        //             CNF.Clauses.Remove(clause);
-        //         
-        //     }
-        // }
         foreach (var clause in CNF.ToList())
         {
             foreach (var x in units)
@@ -170,39 +146,7 @@ public class SAT
         }
         
         solution.AddRange(units);
-        
-        // Console.WriteLine("after");
-        // Console.Write("Solution: ");
-        // var tt = solution.ToHashSet().OrderBy(u => Math.Abs(u));
-        // foreach (var x in tt)
-        //     Console.Write(x + " ");
-        // Console.WriteLine("0");
-        //
-        // Console.WriteLine("CNF: ");
-        // foreach (var c in CNF.Clauses)
-        // {
-        //     Console.Write("Clause:");
-        //     foreach (var x in c.Units)
-        //         Console.Write(x + " ");
-        //     Console.WriteLine("0");
-        // }
     }
-    
-    // public void Print()
-    // {
-    //     Console.WriteLine("CNF: ");
-    //     foreach (var clause in CNF)
-    //     {
-    //         Console.Write("Clause: ");
-    //         foreach (var x in clause)
-    //             Console.Write(x + " ");
-    //         Console.WriteLine();
-    //     }
-    //
-    //     Console.WriteLine("Solution: ");
-    //     foreach (var x in Solution)
-    //         Console.Write(x + " ");
-    // }
     
     private void addVarsToSolution(int varCount, HashSet<int> solutionSet)
     {
