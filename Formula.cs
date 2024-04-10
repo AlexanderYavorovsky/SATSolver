@@ -13,7 +13,16 @@ public class Formula
 
     public Formula(Formula f)
     {
-        Clauses = new List<Clause>(f.Clauses);
+        // Clauses = new List<Clause>(f.Clauses);
+        Clauses = new List<Clause>();
+        foreach (var c in f.Clauses)
+        {
+            var clause = new Clause();
+            foreach(var x in c.Units)
+                clause.Units.Add(x);
+            Clauses.Add(clause);
+        }
+
         DisjCount = f.DisjCount;
         VarCount = f.VarCount;
     }

@@ -15,7 +15,7 @@ public class SAT
         {
             var solutionSet = solution.ToHashSet();
             addVarsToSolution(solutionSet);
-            return (true, solutionSet);
+            return (true, solutionSet.OrderBy(x => Math.Abs(x)));
         }
         
         foreach (var clause in CNF.Clauses)
@@ -38,7 +38,7 @@ public class SAT
         {
             var posSolutionSet = posSolution.ToHashSet();
             addVarsToSolution(posSolutionSet);
-            return (posRes, posSolutionSet);
+            return (posRes, posSolutionSet.OrderBy(x => Math.Abs(x)));
         }
         
         var negClause = new Clause(-literal);
@@ -86,6 +86,15 @@ public class SAT
             if (clause.Units.Count == 1)
                 units.Add(clause.Units[0]);
 
+        // foreach (var x in units)
+        // {
+        //     foreach (var clause in CNF.Clauses.ToList())
+        //     {
+        //         if (clause.Units.Contains(x))
+        //             CNF.Clauses.Remove(clause);
+        //         
+        //     }
+        // }
         foreach (var clause in CNF.Clauses.ToList())
         {
             foreach (var x in units)
@@ -97,6 +106,22 @@ public class SAT
         }
         
         solution.AddRange(units);
+        
+        Console.WriteLine("after");
+        Console.Write("Solution: ");
+        var tt = solution.ToHashSet().OrderBy(u => Math.Abs(u));
+        foreach (var x in tt)
+            Console.Write(x + " ");
+        Console.WriteLine("0");
+        
+        // Console.WriteLine("CNF: ");
+        // foreach (var c in CNF.Clauses)
+        // {
+        //     Console.Write("Clause:");
+        //     foreach (var x in c.Units)
+        //         Console.Write(x + " ");
+        //     Console.WriteLine("0");
+        // }
     }
     
     public void Print()
@@ -118,7 +143,7 @@ public class SAT
     private void addVarsToSolution(HashSet<int> solutionSet)
     {
         if (solutionSet.Count < CNF.VarCount)
-            for (int i = 1; i < CNF.VarCount; i++)
+            for (int i = 1; i <= CNF.VarCount; i++)
                 if (!solutionSet.Contains(i) && !solutionSet.Contains(-i))
                     solutionSet.Add(i);
     }
