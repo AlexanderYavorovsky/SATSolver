@@ -6,7 +6,7 @@ tests_num = 4
 test_dir = 'tests'
 returncode = 0
 
-subprocess.run(['echo', 'Starting tests...'])
+print('Starting tests...')
 
 for file in os.listdir(test_dir):
     if file.endswith('.txt'):
