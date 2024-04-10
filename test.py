@@ -1,7 +1,6 @@
 import subprocess
 import tempfile
 import sys
-from colorama import Fore
 
 sat_msg = 's SATISFIABLE'
 unsat_msg = 's UNSATISFIABLE'
@@ -28,10 +27,10 @@ with open(tmp.name, 'r') as f:
             universal_newlines=True
             )
         if (picosat_status.stdout.strip('\n') == unsat_msg):
-            print(f'{in_file_name}: {Fore.GREEN}PASSED{Fore.LIGHTWHITE_EX}')
+            print(f'{in_file_name}: PASSED')
             sys.exit(0)
         else:
-            print(f'{in_file_name}: {Fore.RED}FAILED{Fore.LIGHTWHITE_EX}')
+            print(f'{in_file_name}: FAILED')
             sys.exit(1)
     else:
         solution = f.readline().strip('\n')[2:]
@@ -63,8 +62,8 @@ with open(tmp.name, 'r') as f:
             )
 
         if (picosat_status.stdout.split('\n')[0] == sat_msg):
-            print(f'{in_file_name}: {Fore.GREEN}PASSED{Fore.LIGHTWHITE_EX}')
+            print(f'{in_file_name}: PASSED')
             sys.exit(0)
         else:
-            print(f'{in_file_name}: {Fore.RED}FAILED{Fore.LIGHTWHITE_EX}')
+            print(f'{in_file_name}: FAILED')
             sys.exit(1)
