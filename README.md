@@ -4,9 +4,9 @@ This project provides SAT solver.
 
 ## Getting Started
 ### Requirements
-* python3
+* Python 3.10+
 * picosat
-* dotnet sdk
+* dotnet SDK 7.0+
 
 ### Build
 Firstly, clone this repository:
@@ -17,7 +17,11 @@ Then, navigate to project directory:
 ```
 cd SATSolver
 ```
-Finally, run this script to build the project and run tests:
+Build project:
+```
+dotnet build -c Release
+```
+Finally, run this script to run tests:
 ``` 
 python3 testall.py
 ```
