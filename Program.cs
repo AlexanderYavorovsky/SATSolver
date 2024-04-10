@@ -7,10 +7,8 @@ class Program()
         string path = args[0];
 
         SAT sat = new SAT();
-        Parser parser = new Parser();
-        sat.CNF = parser.Parse(path);
         
-        (bool status, var solution) = sat.DPLL(new List<int>());
+        (bool status, var solution) = sat.Solve(path);
         if (!status)
         {
             Console.WriteLine("s UNSATISFIABLE");
