@@ -9,7 +9,7 @@ public class SAT
     public (bool, IEnumerable<int>) Solve(string path)
     {
         Parse(path);
-        return DPLL(this.CNF, new List<int>());
+        return DPLL(this.CNF, new List<int>(), true);
     }
     
     private void Parse(string path)
@@ -43,34 +43,59 @@ public class SAT
         }
     }
 
-    public (bool, IEnumerable<int>) DPLL(List<List<int>> CNF, List<int> solution)
+    private List<List<int>> copyCNF(List<List<int>> CNF)
     {
-        PureLiterals(CNF, solution);
-        UnitPropagation(CNF, solution);
+        var copyCNF = new List<List<int>>();
+        foreach (var clause in CNF)
+        {
+            List<int> copy = new List<int>(clause);
+            copyCNF.Add(copy);
+        }
+
+        return copyCNF;
+    }
+
+    public (bool, IEnumerable<int>) DPLL(List<List<int>> CNF, List<int> solution, bool isPosBranch)
+    {
+        // Console.WriteLine("======");
+        // Console.WriteLine(isPosBranch ? "PosBranch:" : "NegBranch:");
+
+        var cnfcopy = this.copyCNF(CNF);
+        var solutioncopy = new List<int>(solution);
+        
+        UnitPropagation(cnfcopy, solutioncopy);
+        PureLiterals(cnfcopy, solutioncopy);
 
         //check
-        if (CNF.Count == 0)
+        if (cnfcopy.Count == 0)
         {
-            var solutionSet = solution.ToHashSet();
+            var solutionSet = solutioncopy.ToHashSet();
             addVarsToSolution(VarCount, solutionSet);
             return (true, solutionSet.OrderBy(x => Math.Abs(x)));
         }
 
-        foreach (var clause in CNF)
+        foreach (var clause in cnfcopy)
             if (clause.Count == 0)
-                return (false, solution);
+                return (false, solutioncopy);
 
         //choose lit
-        var literal = CNF[0][0];
+        var literal = cnfcopy[0][0];
 
         //recursion
         // dpll(cnf & literal)
         // dpll(cnf & ~literal)
 
         var posClause = new List<int> { literal };
-        var posCNF = new List<List<int>>(CNF);
+        // var posCNF = new List<List<int>>();
+        // foreach (var clause in cnfcopy)
+        // {
+        //     List<int> copy = new List<int>(clause);
+        //     posCNF.Add(copy);
+        // }
+        var posCNF = copyCNF(cnfcopy);
         posCNF.Add(posClause);
-        (bool posRes, var posSolution) = DPLL(posCNF, solution);
+        
+        (bool posRes, var posSolution) = DPLL(posCNF, solutioncopy, true);
 
         if (posRes)
         {
@@ -79,16 +104,17 @@ public class SAT
             return (posRes, posSolutionSet.OrderBy(x => Math.Abs(x)));
         }
 
-        var negClause = new List<int> {-literal};
-        var negCNF = new List<List<int>>(CNF);
+        var negClause = new List<int> { -literal };
+        // var negCNF = new List<List<int>>();
+        // foreach (var clause in cnfcopy)
+        // {
+        //     List<int> copy = new List<int>(clause);
+        //     negCNF.Add(copy);
+        // }
+        var negCNF = copyCNF(cnfcopy);
         negCNF.Add(negClause);
         
-        return DPLL(negCNF, solution);
-    }
-    
-    public (bool, IEnumerable<int>) DPLL(List<int> solution)
-    {
-        return DPLL(CNF, solution);
+        return DPLL(negCNF, solutioncopy, false);
     }
 
     public void PureLiterals(List<List<int>> CNF, List<int> solution)
