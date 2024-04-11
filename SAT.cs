@@ -2,8 +2,8 @@ namespace SATSolver;
 
 public class SAT
 {
-    public List<List<int>> CNF;
-    public int VarCount { get; private set; }
+    private List<List<int>> CNF;
+    private int VarCount;
 
     public IEnumerable<int>? Solve(string path)
     {
@@ -28,7 +28,7 @@ public class SAT
                 {
                     var splitted = line.Split().Where(x => !string.IsNullOrEmpty(x));
 
-                    List<int> clause = new List<int>();
+                    var clause = new List<int>();
                     foreach (var x in splitted)
                     {
                         if (x == "0") break;
@@ -46,7 +46,7 @@ public class SAT
         var copyCNF = new List<List<int>>();
         foreach (var clause in CNF)
         {
-            List<int> copy = new List<int>(clause);
+            var copy = new List<int>(clause);
             copyCNF.Add(copy);
         }
 
@@ -77,16 +77,13 @@ public class SAT
 
         var literal = cnfCopy[0][0];
 
-        var posClause = new List<int> { literal };
-        var posCNF = copyCNF(cnfCopy);
-        posCNF.Add(posClause);
+        CNF.Add(new List<int> { literal });
         
-        var posSolution = DPLL(posCNF, solutionCopy);
+        var posSolution = DPLL(CNF, solutionCopy);
         if (posSolution != null)
             return returnSolution(posSolution);
 
-        var negClause = new List<int> { -literal };
-        cnfCopy.Add(negClause);
+        cnfCopy.Add(new List<int> { -literal });
 
         return DPLL(cnfCopy, solutionCopy);
     }

@@ -7,7 +7,7 @@ unsat_msg = 's UNSATISFIABLE'
 
 in_file_name = sys.argv[1]
 result = subprocess.run(
-    ['dotnet', 'run', in_file_name],
+    ['dotnet', 'run', '--configuration', 'Release', in_file_name],
     capture_output=True,
     universal_newlines=True
     )
