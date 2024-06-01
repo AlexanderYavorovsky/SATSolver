@@ -1,4 +1,6 @@
-﻿namespace SATSolver;
+﻿using System.Diagnostics;
+
+namespace SATSolver;
 
 class Program
 {
@@ -6,20 +8,25 @@ class Program
     {
         string path = args[0];
 
-        SAT sat = new SAT();
-        
-        var solution = sat.Solve(path);
-        if (solution == null)
+        // warming up
+        for (int i = 0; i < 40; i++)
         {
-            Console.WriteLine("s UNSATISFIABLE");
-            return;
+            SAT s_sat = new SAT();
+            var s_solution = s_sat.Solve(path);
         }
-        Console.WriteLine("s SATISFIABLE");
-        Console.Write("v ");
-        foreach (var x in solution)   
+
+        var sw = new Stopwatch();
+        for (int i = 0; i < 80; i++)
         {
-            Console.Write(x + " ");
+            SAT warmSat = new SAT();
+
+            sw.Restart();
+            var warmSolution = warmSat.Solve(path);
+            sw.Stop();
+
+            var time = sw.ElapsedMilliseconds;
+            Console.WriteLine(time);
         }
-        Console.WriteLine("0");
+
     }
 }
